@@ -1,0 +1,79 @@
+import pygame
+import random
+
+# Initialize Pygame
+pygame.init()
+
+# Set up the game window
+window_width = 800
+window_height = 600
+window = pygame.display.set_mode((window_width, window_height))
+pygame.display.set_caption("Car Racing Game")
+
+# Set up the colors
+white = (255, 255, 255)
+black = (0, 0, 0)
+red = (255, 0, 0)
+
+# Set up the car
+car_width = 73
+car_height = 82
+car_image = pygame.image.load("car.png")  # Replace "car.png" with your car image file
+
+def car(x, y):
+    window.blit(car_image, (x, y))
+
+# Set up the obstacles
+obstacle_width = 100
+obstacle_height = 100
+obstacle_x = random.randint(0, window_width - obstacle_width)
+obstacle_y = -obstacle_height
+obstacle_speed = 5
+
+def obstacle(obstacle_x, obstacle_y):
+    pygame.draw.rect(window, red, (obstacle_x, obstacle_y, obstacle_width, obstacle_height))
+
+# Set up the game clock
+clock = pygame.time.Clock()
+
+# Set up the game loop
+running = True
+car_x = (window_width - car_width) // 2
+car_y = window_height - car_height
+
+while running:
+    # Handle events
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    # Move the car
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_LEFT]:
+        car_x -= 5
+    if keys[pygame.K_RIGHT]:
+        car_x += 5
+
+    # Update the game state
+    obstacle_y += obstacle_speed
+
+    # Check for collisions
+    if car_x < obstacle_x + obstacle_width and car_x + car_width > obstacle_x and car_y < obstacle_y + obstacle_height and car_y + car_height > obstacle_y:
+        print("Collision!")  # You can add your own collision logic here
+
+    # Draw the game
+    window.fill(white)
+    car(car_x, car_y)
+    obstacle(obstacle_x, obstacle_y)
+
+    # Check if the obstacle has passed the window
+    if obstacle_y > window_height:
+        obstacle_x = random.randint(0, window_width - obstacle_width)
+        obstacle_y = -obstacle_height
+
+    # Update the display
+    pygame.display.update()
+    clock.tick(60)
+
+# Quit the game
+pygame.quit()
